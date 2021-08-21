@@ -7,22 +7,22 @@ const request = require('postman-request');
 // const url = 'http://api.weatherstack.com/current?access_key=f6d03af80fa5dae802d2c03c9582ec83&query=';
 
 
-const getForecast = (geocode, callback) => {
-    const url = `http://api.weatherstack.com/current?access_key=f6d03af80fa5dae802d2c03c9582ec83&query=${geocode.latitude},${geocode.longitude}`;
-    request({url: url,
+const getForecast = ({latitude, longitude}, callback) => {
+    const url = `http://api.weatherstack.com/current?access_key=f6d03af80fa5dae802d2c03c9582ec83&query=${latitude},${longitude}`;
+    request({url,
              json: true},
-            (error, response) => {
+            (error, {body}) => {
                 if (error) {
                     callback('Unable to connect weather service!', undefined)
                     // console.log(chalk.error('Unable to connect weather service!'));
-                } else if(response.body.error) {
-                    callback(response.body.error.info, undefined)
+                } else if(body.error) {
+                    callback(body.error.info, undefined)
                     // console.log(chalk.error('Unable to find location. Try another search!'));
                 } else {
                     callback(undefined, {
-                        temprature: response.body.current.temperature,
-                        feelsLike: response.body.current.feelslike,
-                        weather_descriptions: response.body.current.weather_descriptions[0]
+                        temperature: body.current.temperature,
+                        feelsLike: body.current.feelslike,
+                        weather_descriptions: body.current.weather_descriptions[0]
                     })
                     // console.log(chalk.success(`${weather_descriptions} .It is currently ${temprature} degree out, it feels ${feelsLike} degree out.`));
                 }
